@@ -1,0 +1,337 @@
+# Map file created from QGIS project file C:/Users/DCPN/Desktop/projet.qgs
+# Edit this file to customize for your map interface
+# (Created with PyQgis MapServer Export plugin)
+MAP
+  NAME "QGIS-MAP"
+  STATUS ON
+  # Map image size
+  SIZE 800 800
+  UNITS meters
+QUERYMAP
+STATUS ON
+# the map is queryable by default
+END
+  EXTENT 470000 4481933 610000 4630000
+  FONTSET "fonts.txt"
+  #SYMBOLSET './symbols/symbols.txt'
+  
+  #Mettre la projection du district concerne. Mapserver fera la reprojection dans ce systeme de coordonnees
+  PROJECTION
+  "init=epsg:32742"
+  END
+
+  # Background color for the map canvas -- change as desired
+  IMAGECOLOR 255 255 255
+  IMAGEQUALITY 95
+  IMAGETYPE agg
+
+  OUTPUTFORMAT
+    NAME agg
+    DRIVER AGG/PNG
+    IMAGEMODE RGB
+  END
+  
+   # Legend
+  LEGEND
+     IMAGECOLOR 255 255 255
+    STATUS ON
+    KEYSIZE 18 12
+    LABEL
+      TYPE BITMAP
+      SIZE MEDIUM
+      COLOR 0 0 89
+    END
+  END
+  
+
+  # Web interface definition. Only the template parameter
+  # is required to display a map. See MapServer documentation
+  WEB
+    # Set IMAGEPATH to the path where MapServer should
+    # write its output.
+    IMAGEPATH "/var/www/output/"
+
+    # Set IMAGEURL to the url that points to IMAGEPATH
+    # as defined in your web server configuration
+    IMAGEURL "/output/"
+
+    # WMS server settings
+    METADATA
+      'wms_title'           'mapfile_espece'
+      'wms_onlineresource'  'http://193.253.99.148/cgi-bin/mapserv?map=/var/www/observatoire_biodiversite/mapfile_espece.map&'
+ 'wms_srs' 'EPSG:32742 EPSG:900913'
+ 'wms_enable_request' '*'
+  'wms_feature_info_mime_type' 'text/html'
+  'wms_include_items' 'all' 
+
+    END
+ HEADER "templates/header_2.html"
+FOOTER "templates/footer_2.html"
+EMPTY "www/observatoire_biodiversite/templates/blank.html"
+
+    #Scale range at which web interface will operate
+    # Template and header/footer settings
+    # Only the template parameter is required to display a map. See MapServer documentation
+    TEMPLATE "template_especes.html"
+  END
+	 
+ SYMBOL
+	NAME 'circle'
+	TYPE ellipse
+	FILLED true
+	POINTS
+	1 1
+	END
+	END
+	
+	
+	
+ LAYER
+    NAME 'espece_choisie'
+    TYPE POINT
+VALIDATION
+      'especevernaculaire' '.'
+END
+  EXTENT 470000 4481933 610000 4630000
+
+    CONNECTIONTYPE postgis
+    CONNECTION "dbname='bddrntaaf' host=192.168.1.245 port=5432 user='postgres' password='DEJEAN2000' sslmode=disable"
+ #  DATA 'the_geom FROM (SELECT * FROM vues_ornithologie.cmtg_indiff_vue WHERE fk_espece_vernaculaire=\'%especevernaculaire%\') as subquery USING UNIQUE cle_primaire USING srid=32742'
+DATA 'the_geom FROM (SELECT * FROM vues_ornithologie.cmtg_indiff_vue) as subquery USING UNIQUE cle_primaire USING srid=32742'
+FILTER "fk_espece_vernaculaire in( \'%especevernaculaire%\' )"
+
+    METADATA
+      'wms_title' 'espece_choisie'
+      'especevernaculaire_validation_pattern' "."
+      'especevernaculaire' 'NULL'
+    END
+#LABELITEM "place_name"
+ #   STATUS ON
+ #   TRANSPARENCY 100
+ #   PROJECTION
+ #  "init=epsg:32742"
+ #   END
+
+CLASSITEM "fk_espece_vernaculaire"
+   
+ CLASS
+NAME 'Albatros à sourcils noirs'
+# EXPRESSION = valeur dans la table attributaire
+ EXPRESSION 'Albatros à sourcils noirs'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 255 0 0 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Albatros fuligineux à dos clair'     
+ EXPRESSION 'Albatros fuligineux à dos clair'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 255 255 255 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Chionis (petit bec en fourreau de Kerguelen)'
+ EXPRESSION 'Chionis (petit bec en fourreau de Kerguelen)'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 178 100 0 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Cormoran de Kerguelen'     
+ EXPRESSION 'Cormoran de Kerguelen'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 255 255 150 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Goéland dominicain'
+ EXPRESSION 'Goéland dominicain'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 108 56 25 
+        OUTLINECOLOR 0 0 0
+      END
+END
+
+ CLASS 
+NAME 'Gorfou sauteur subantarctique'     
+ EXPRESSION 'Gorfou sauteur subantarctique'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 56 255 147 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Manchot papou'
+ EXPRESSION 'Manchot papou'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 250 152 66 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Manchot royal'     
+ EXPRESSION 'Manchot royal'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 120 255 89 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Pétrel à menton blanc'
+ EXPRESSION 'Pétrel à menton blanc'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 123 64 150 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Pétrel de Kerguelen'     
+ EXPRESSION 'Pétrel de Kerguelen'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 23 255 147 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Pétrel géant subantarctique'
+ EXPRESSION 'Pétrel géant subantarctique'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 200 200 200 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Pétrel gris'     
+ EXPRESSION 'Pétrel gris'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 198 25 0 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Pétrel plongeur commun'
+ EXPRESSION 'Pétrel plongeur commun'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 135 135 135 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Skua subantarctique'     
+ EXPRESSION 'Skua subantarctique'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 189 62 47 
+        OUTLINECOLOR 0 0 0
+      END
+END
+
+ CLASS 
+NAME 'Sterne antarctique'
+ EXPRESSION 'Sterne antarctique'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 123 230 60 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Sterne de Kerguelen'
+ EXPRESSION 'Sterne de Kerguelen'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 145 145 145 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+ CLASS 
+NAME 'Sterne sp.'
+ EXPRESSION 'Sterne sp.'   
+       STYLE
+        SYMBOL 'circle'
+        SIZE 7
+         COLOR 25 50 25 
+        OUTLINECOLOR 0 0 0
+OUTLINEWIDTH 0.5
+      END
+END
+
+
+	   	 
+	   	 
+    
+
+
+  HEADER   "templates/header_espece.html"
+    FOOTER "templates/footer_espece.html"
+TEMPLATE "templates/content_especes.html"
+TOLERANCE 10
+TOLERANCEUNITS PIXELS
+  END	
+
+    
+  
+  
+	END
+	

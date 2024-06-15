@@ -1,0 +1,8 @@
+SYMBOL
+  NAME "cabanes_ker"
+  TYPE TRUETYPE
+  FONT esri_infra
+  FILLED true
+  ANTIALIAS true
+  CHARACTER "e"
+END

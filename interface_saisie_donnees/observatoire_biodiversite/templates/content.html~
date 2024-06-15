@@ -1,0 +1,25 @@
+<!-- MapServer Template -->
+
+       <tbody>
+
+         <th>Nom du transect</th>
+         <th>Type d'espèces</th>
+
+ 
+<th >Longueur (m)</th>
+ 
+      <tr >
+
+
+   <!--    <td  > <strong> <font size="3" color="red"> [item name="nom_transect" format=$value escape=none] </font></strong></td>  -->  
+<td >[item name="nom_transect" format=$value escape=none]</td>
+<td >[item name="especes_transect" format=$value escape=none]</td>
+<td >[item name="longueur_theorique_transect" format=$value escape=none]</td>
+ <!--  
+ <td > <iframe src="essai.php"> </iframe></td> 
+  -->  
+
+Pour insérer une image. Mettre l'image dans le fichier où est le mapfile
+<td ><img src="rplot_nbjourshomme_entredeuxdates.png" ></td>
+  
+        </tr>
