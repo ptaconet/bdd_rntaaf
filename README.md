@@ -4,8 +4,8 @@ La base de données a été développée en SQL sous le SGBD PostgreSQL + PostGI
 
 **Ce dépot ne contient pas les données**. Il contient les produits suivants : 
 
-- `bdd_modele_conceptuel/` : dossier contenant le modèle conceptuel de la BDD
-- `bdd_modele_physique/` : dossier contenant le modèle physique de la BDD (DUMP SQL)
-- `bdd_dictionnaire_de_donnees/` : dossier contenant le dictionnaire de données de la BDD
-- `bdd_tutoriels_installation/` :  documentation technique pour installer et manipuler la BDD
-- `interface_saisie_donnees/` : interface de saisie des données (PHP+SQL)
+- `bdd_modele_conceptuel/` : Modèle conceptuel de la BDD
+- `bdd_modele_physique/` : Modèle physique de la BDD (DUMP SQL)
+- `bdd_dictionnaire_de_donnees/` : Dictionnaire de données de la BDD
+- `bdd_tutoriels_installation/` :  Documentation technique pour installer et manipuler la BDD
+- `interface_saisie_donnees/` : Interface de saisie des données (PHP+SQL)
