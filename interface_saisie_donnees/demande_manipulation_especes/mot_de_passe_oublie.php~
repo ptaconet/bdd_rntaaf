@@ -1,0 +1,42 @@
+<?php
+require_once('../config.php');
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+<head>
+<title>Recupération du mot de passe</title>
+<meta http-equiv="Content-Type" content="text/html";
+charset="utf-8" />
+
+</head>
+<body>
+<?php
+ if(isset($_POST['submit'])){
+
+$requete = $bdd->prepare('SELECT mot_de_passe,mail FROM demande_manipulation_especes.demandeur WHERE demandeur.nom=?');
+$requete->execute(array($_POST['nom_utilisateur']));
+$requeteaa=$requete->fetch();
+$password=$requeteaa['mot_de_passe'];
+$mail=$requeteaa['mail'];
+$requete ->closeCursor();
+
+
+$subject = "Mot de passe pour site demande manipulation espèces TAAF";
+$message = 'Votre mot de passe est: '.$password;
+$from = "paul.taconet@taaf.fr";
+$headers = "De:" . $from;
+mail($mail,$subject,$message,$headers);
+echo "Le mot de passe vous a été envoyé sur votre boite mail.";
+echo'<a href="connexion.php" > Cliquez ici <a> pour revenir à la page de connexion';
+}
+
+
+else{
+?>
+Veuillez taper votre nom dans la case ci-dessous. Votre mot de passe vous sera envoyé sur votre boite mail.</p>
+<form method="POST">
+Nom d'utilisateur:<input type="text" name="nom_utilisateur" /></P> 
+<input type="submit" name="submit" value="Valider" />
+<?php } ?>
+</body>
+ </html>

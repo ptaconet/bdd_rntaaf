@@ -1,0 +1,655 @@
+<?php
+
+include('coordonnees_de_session.php');
+require_once('../config.php');
+
+$sites_ams='[';
+$reponse1=$bdd->query('SELECT nom_site FROM demande_manipulation_especes.sites_amsterdam');
+while ($sitesams=$reponse1->fetch()){
+$sites_ams=$sites_ams.'"'.$sitesams['nom_site'].'", ';
+}
+$sites_ams = substr($sites_ams, 0,-2);
+$sites_ams=$sites_ams.']';
+
+$sites_cro='[';
+$reponse1=$bdd->query('SELECT nom_site FROM demande_manipulation_especes.sites_crozet');
+while ($sitescro=$reponse1->fetch()){
+$sites_cro=$sites_cro.'"'.$sitescro['nom_site'].'", ';
+}
+$sites_cro = substr($sites_cro, 0,-2);
+$sites_cro=$sites_cro.']';
+
+$sites_ker='[';
+$reponse1=$bdd->query('SELECT nom_site FROM demande_manipulation_especes.sites_kerguelen');
+while ($sitesker=$reponse1->fetch()){
+$sites_ker=$sites_ker.'"'.$sitesker['nom_site'].'", ';
+}
+$sites_ker = substr($sites_ker, 0,-2);
+$sites_ker=$sites_ker.']';
+?>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+<head>
+<meta http-equiv="Content-Type" content="text/html";
+charset="utf-8" />
+    <title>Demande de manipulation d'espèces</title>
+<script type="text/javascript">
+
+// Trap Backspace(8) and Enter(13) - 
+// Except bksp on text/textareas, enter on textarea/submit
+
+if (typeof window.event != 'undefined') // IE
+  document.onkeydown = function() // IE
+    {
+    var t=event.srcElement.type;
+    var kc=event.keyCode;
+    return ((kc != 8 && kc != 13) || ( t == 'text' &&  kc != 13 ) ||
+             (t == 'textarea') || ( t == 'submit' &&  kc == 13))
+    }
+else
+  document.onkeypress = function(e)  // FireFox/Others 
+    {
+    var t=e.target.type;
+    var kc=e.keyCode;
+    if ((kc != 8 && kc != 13) || ( t == 'text' &&  kc != 13 ) ||
+        (t == 'textarea') || ( t == 'submit' &&  kc == 13))
+        return true
+    else {
+        alert('Les touches Entrée et Supprimer ne sont pas autorisées ici'); // Demo code
+        return false
+    }
+   }
+</script>
+
+
+
+
+
+<style>
+h4 {text-align:center}
+</style>
+</head>
+<body>
+
+<?php
+
+ if(isset($_POST['submit'])){
+include('test_erreurs_demande.php');
+if (isset($erreur)) { 
+echo "</p> <FONT COLOR='red'><b>Merci de saisir les données manquantes ou erronées, ainsi que le site et la pièce jointe, et valider de nouveau</b></font></p>";
+}
+if (!isset($erreur)) { 
+include('integration_donnees_demande.php');
+include('integration_pj.php');
+
+}
+}
+?>
+
+<form method="POST" enctype="multipart/form-data">
+  <noscript>This page requires JavaScript be available and enabled to function properly</noscript>
+  <div>
+    <div id="titre" style='float: right;text-align: center;vertical-align: middle;'>
+
+  TERRITOIRE DES TERRES AUSTRALES </br>ET ANTARCTIQUES FRANCAISES </br>
+
+ BP400</br>
+ 97458 Saint-Pierre cedex
+  </div>
+   <div id="logo" style='margin:0 auto ;'>
+  <img src="logo-taaf.jpg"  style="display:block;margin-left:40%;margin-right:50%;" border="0" alt="logo taaf"  height="120" width="230"/> 
+    </div>
+	</p>
+ <div style='text-align: center;vertical-align: middle;'>
+<b>DEMANDE D'AUTORISATION DE CAPTURE OU DE PRELEVEMENT A DES FINS SCIENTIFIQUES DE SPECIMENS D'ESPECES ANIMALES PROTEGEES</br>
+titre 1<sup>er</sup> du Livre IV du code de l'environnement relatif à la protection de la faune et de la flore
+</b>
+</div>
+  </div>
+ <div style="height:30px;display:block;"> </div> 
+<u>NOTA BENE</u>: Une demande consiste en un ensemble de manipulations sur 1 site et pour un certain nombre d'espèces. Ainsi, la même manipulation sur les mêmes espèces mais sur 2 sites différents fera l'objet de 2 demandes. De même, 2 types de manipulations sur les mêmes espèces et sur le même site feront l'objet de 2 demandes. 
+ <div style="height:30px;display:block;"> </div> 
+  <!--  <img src="logo_rn_taaf.jpg" border="0" alt="logo rnn taaf"   height="100" width="250"/> </p> -->
+ <!-- <h1>Dynamic Select Statements</h1>    -->
+
+ <!-- div pour l'identification du demandeur -->
+ <div id="identification_demandeur" style="border:1px solid black">
+ 
+ <h4>A. IDENTIFICATION DU DEMANDEUR</h4>
+ </p>
+ <?php
+ $requete = $bdd->prepare('SELECT * FROM demande_manipulation_especes.demandeur WHERE nom=?');
+ $requete->execute(array($_SESSION['responsable'])) or die(print_r($requete->errorInfo()));
+ $coordonnees_demandeur=$requete->fetch();
+ ?>
+&nbsp A1: <u>Nom et prénom du demandeur</u> : <b><?php echo $coordonnees_demandeur['nom'].' '.$coordonnees_demandeur['prenom']; ?> </b></br>
+ Veuillez trouver ci-dessous vos coordonnées telles que vous les avez enregistrées lors de votre dernière saisie. Si celles-ci ont changé, merci de les modifier. Lors de votre première saisie, merci de compléter ces champs.</br>
+ <table cellpadding="1" cellspacing="1">
+ <tr>
+ <td>Adresse: </td> <td><input type="text" name="adresse" size="70" value="<?php echo $coordonnees_demandeur['adresse'];  ?>"/></td> </tr>
+ <td>Organisme de rattachement:</td> <td><input type="text" name="organisme_rattachement" size="70" value="<?php echo $coordonnees_demandeur['organisme_rattachement'];  ?>"/></td> </tr>
+ <td>Téléphone:</td> <td><input type="text" name="telephone" value="<?php echo $coordonnees_demandeur['telephone'];  ?>"/></td> </tr>
+ <td>Mail:</td> <td><input type="text" name="mail" value="<?php echo $coordonnees_demandeur['mail'];  ?>"/></td> </tr>
+ </table>
+ <?php  $requete->closeCursor();?>
+
+ </p>
+&nbsp A2: <u>Titre et coordonnées du programme: </u>
+ Sélectionnez le programme dans la liste ci-dessous ou bien ajoutez un nouveau programme si celui-ci ne s'y trouve pas
+ </br>
+ Programmes existants: <select name="programme">
+ 	<option value="NA"></option>
+ <?php 
+ $requete = $bdd->prepare('SELECT titre,numero FROM demande_manipulation_especes.programme WHERE fk_responsable=? ORDER BY numero');
+ $requete->execute(array($_SESSION['responsable'])) or die(print_r($requete->errorInfo())); 
+while ($programmes=$requete->fetch()){ ?>
+<option value="<?php echo $programmes['numero'] ?>" <?php echo (isset($_POST['programme']) && $_POST['programme'] == $programmes['numero'] ? ' selected="selected" ' : '');?> ><?php echo $programmes['numero'].' - '.$programmes['titre']; ?> </option> 
+<?php } 
+$requete->closeCursor();?>
+</select>
+</p>
+<b>Nouveau programme</b>: Coordonnées du nouveau programme (Si vous avez séléctionné un programme dans la liste précédente, veuillez ne pas remplir ces champs):<br>
+ <table cellpadding="1" cellspacing="1">
+ <tr>
+ <td>Titre: </td> <td><input type="text" name="titre_programme" size="150" value="<?php echo (isset($_POST['titre_programme']) ? $_POST['titre_programme'] : ''); ?>"  /> </td></tr>
+ <td>Numéro: </td> <td><input type="text" name="numero_programme" value="<?php echo (isset($_POST['numero_programme']) ? $_POST['numero_programme'] : ''); ?>"  /> </td></tr>
+</table>
+  </p>
+ </div>
+ 
+ <div style="height:30px;display:block;"> </div> 
+ 
+ 
+ 
+ 
+ 
+ 
+ <!-- EN COMMENTAIRES
+div pour l'identification des specimens
+  <div id="choix_specimens" style="border:1px solid black">
+  <h4>B. IDENTIFICATION DES SPECIMENS</h4>
+  Choisissez les spécimens dans la liste ci-dessous.</br>
+  Ordre - famille - nom scientifique - nom commun
+  </br>
+  
+ CECI DESSOUS N'EST PLUS VALABLE....
+  <?php 
+for  ($numpespece = 1; $numpespece <= 15; $numpespece++) {
+$espece='espece_'.$numpespece;
+?>
+<select name="<?php echo $espece_listederoulante; ?>">
+		<option value="NA"></option>	
+		<?php 
+				// recuperation des donnees d'especes
+				$reponse=$bdd->query('SELECT * FROM demande_manipulation_especes.especes ORDER BY nom_commun ASC');
+				while ($esp=$reponse->fetch()){ ?>
+				<option value="<?php echo $esp['nom_commun'] ?>" <?php echo (isset($_POST[$espece_listederoulante]) && $_POST[$espece_listederoulante] == $esp['nom_commun'] ? ' selected="selected" ' : '');?> > <?php echo $esp['ordre'].' - '.$esp['famille'].' - <i>'.$esp['nom_scientifique'].'</i> - '.$esp['nom_commun'] ?></option> 
+				<?php ; } 
+				$reponse ->closeCursor(); ?>
+			   </select></br>
+
+		<?php } ?>
+	....JUSQU'ICI
+		
+		 <div id="dynamicInput"></div>
+      <input type="button" value="Ajouter une espèce" onclick="addInput('dynamicInput')" />
+	  
+   </p> 
+  </div>
+  <div style="height:30px;display:block;"> </div> 
+  
+  -->
+  
+  
+  
+<script type="text/javascript">
+ //<![CDATA[ 
+ // array of possible countries in the same order as they appear in the sites selection list 
+ var listeSites = new Array(4) 
+ listeSites["empty"] = ["Choisissez un district"]; 
+ listeSites["Kerguelen"] = <?php echo $sites_ker; ?>; 
+ listeSites["Crozet"] = <?php echo $sites_cro; ?>; 
+ listeSites["Amsterdam"] = <?php echo $sites_ams; ?>; 
+ /* sitesChange() is called from the onchange event of a select element. 
+ * param selectObj - the select object which fired the on change event. 
+ */ 
+ function sitesChange(selectObj) { 
+ // get the index of the selected option 
+ var idx = selectObj.selectedIndex; 
+ // get the value of the selected option 
+ var which = selectObj.options[idx].value; 
+ // use the selected option value to retrieve the list of items from the listeSites array 
+ cList = listeSites[which]; 
+ // get the sites select element via its known id 
+ var cSelect = document.getElementById("sites"); 
+ // remove the current options from the sites select 
+ var len=cSelect.options.length; 
+ while (cSelect.options.length > 0) { 
+ cSelect.remove(0); 
+ } 
+ var newOption; 
+ // create new options 
+ for (var i=0; i<cList.length; i++) { 
+ newOption = document.createElement("option"); 
+ newOption.value = cList[i];  // assumes option string and value are the same 
+ newOption.text=cList[i]; 
+ 
+ // add the new option 
+ try { 
+ cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE 
+ } 
+ catch (e) { 
+ cSelect.appendChild(newOption); 
+ } 
+ } 
+ } 
+//]]>
+</script>
+<!-- div pour le choix du lieu-->
+ <div id="choix_lieu" style="border:1px solid black">
+  <h4>C. DATES ET LIEUX DE CAPTURE OU DE PRELEVEMENT</h4>
+  
+ </p>
+<?php if(isset($erreur)){ echo '<font color="red"><b> Merci de ressaisir le site avant de valider</b></font></p>';} ?> 
+  <table cellpadding="1" cellspacing="1">
+  
+ <tr>
+ <td> C1. District: </td> 
+ <td> <select id="district" name="district" onchange="sitesChange(this);">
+    <option value="empty" <?php echo (isset($_POST['district']) && $_POST['district'] == 'empty' ? ' selected="selected" ' : '');?> > Sélectionnez le district</option>
+    <option value="Kerguelen" <?php echo (isset($_POST['district']) && $_POST['district'] == 'Kerguelen' ? ' selected="selected" ' : '');?> >Kerguelen</option>
+    <option value="Crozet" <?php echo (isset($_POST['district']) && $_POST['district'] == 'Crozet' ? ' selected="selected" ' : '');?> >Crozet</option>
+    <option value="Amsterdam" <?php echo (isset($_POST['district']) && $_POST['district'] == 'Amsterdam' ? ' selected="selected" ' : '');?> >Amsterdam</option>
+    <option value="Terre Adélie" <?php echo (isset($_POST['district']) && $_POST['district'] == 'Terre Adélie' ? ' selected="selected" ' : '');?> >Terre Adélie</option>
+ 
+ </select> </td> </tr>
+  <tr><td>C2. Site: </td> <td>
+  <select id="sites" name="sites">
+    <option value="NA">Sélectionnez le site</option>
+  </select>
+  </td> </tr>
+  <td>C3. Date de début et de fin de validité: </td>  
+  <td> de 
+  <select name="mois_debut">
+  <option value="NA"></option>
+  <option value="janvier" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'janvier' ? ' selected="selected" ' : '');?> >janvier</option>
+  <option value="fevrier" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'fevrier' ? ' selected="selected" ' : '');?> >fevrier</option>
+  <option value="mars" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'mars' ? ' selected="selected" ' : '');?> >mars</option>
+  <option value="avril" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'avril' ? ' selected="selected" ' : '');?> >avril</option>
+  <option value="mai" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'mai' ? ' selected="selected" ' : '');?> >mai</option>
+  <option value="juin" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'juin' ? ' selected="selected" ' : '');?> >juin</option>
+  <option value="juillet" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'juillet' ? ' selected="selected" ' : '');?> >juillet</option>
+  <option value="aout" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'aout' ? ' selected="selected" ' : '');?> >aout</option>
+  <option value="septembre" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'septembre' ? ' selected="selected" ' : '');?> >septembre</option>
+  <option value="octobre" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'octobre' ? ' selected="selected" ' : '');?> >octobre</option>
+  <option value="novembre" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'novembre' ? ' selected="selected" ' : '');?> >novembre</option>
+  <option value="decembre" <?php echo (isset($_POST['mois_debut']) && $_POST['mois_debut'] == 'decembre' ? ' selected="selected" ' : '');?> >decembre</option>
+  </select>
+  <select name="annee_debut">
+  <option value="NA"></option>
+  <option value="2013" <?php echo (isset($_POST['annee_debut']) && $_POST['annee_debut'] == '2013' ? ' selected="selected" ' : '');?> >2013</option>
+  <option value="2014" <?php echo (isset($_POST['annee_debut']) && $_POST['annee_debut'] == '2014' ? ' selected="selected" ' : '');?> >2014</option>  
+  <option value="2015" <?php echo (isset($_POST['annee_debut']) && $_POST['annee_debut'] == '2015' ? ' selected="selected" ' : '');?> >2015</option>  
+  <option value="2016" <?php echo (isset($_POST['annee_debut']) && $_POST['annee_debut'] == '2016' ? ' selected="selected" ' : '');?> >2016</option>
+  </select>
+  à
+   <select name="mois_fin">
+  <option value="NA"></option>
+  <option value="janvier" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'janvier' ? ' selected="selected" ' : '');?> >janvier</option>
+  <option value="fevrier" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'fevrier' ? ' selected="selected" ' : '');?> >fevrier</option>
+  <option value="mars" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'mars' ? ' selected="selected" ' : '');?> >mars</option>
+  <option value="avril" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'avril' ? ' selected="selected" ' : '');?> >avril</option>
+  <option value="mai" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'mai' ? ' selected="selected" ' : '');?> >mai</option>
+  <option value="juin" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'juin' ? ' selected="selected" ' : '');?> >juin</option>
+  <option value="juillet" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'juillet' ? ' selected="selected" ' : '');?> >juillet</option>
+  <option value="aout" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'aout' ? ' selected="selected" ' : '');?> >aout</option>
+  <option value="septembre" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'septembre' ? ' selected="selected" ' : '');?> >septembre</option>
+  <option value="octobre" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'octobre' ? ' selected="selected" ' : '');?> >octobre</option>
+  <option value="novembre" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'novembre' ? ' selected="selected" ' : '');?> >novembre</option>
+  <option value="decembre" <?php echo (isset($_POST['mois_fin']) && $_POST['mois_fin'] == 'decembre' ? ' selected="selected" ' : '');?> >decembre</option>
+  </select>
+  <select name="annee_fin">
+  <option value="NA"></option>
+  <option value="2013" <?php echo (isset($_POST['annee_fin']) && $_POST['annee_fin'] == '2013' ? ' selected="selected" ' : '');?> >2013</option>
+  <option value="2014" <?php echo (isset($_POST['annee_fin']) && $_POST['annee_fin'] == '2014' ? ' selected="selected" ' : '');?> >2014</option>  
+  <option value="2015" <?php echo (isset($_POST['annee_fin']) && $_POST['annee_fin'] == '2015' ? ' selected="selected" ' : '');?> >2015</option>  
+  <option value="2016" <?php echo (isset($_POST['annee_fin']) && $_POST['annee_fin'] == '2016' ? ' selected="selected" ' : '');?> >2016</option>
+  </select>
+</td>
+</tr>  
+  </table>
+  </p>
+  </div>
+  
+   <div style="height:30px;display:block;"> </div> 
+<!-- div pour le choix de la finalité-->
+ <div id="choix_finalité" style="border:1px solid black">
+  <h4>D. FINALITE DE LA CAPTURE OU DU PRELEVEMENT</h4>
+  </p>
+&nbsp  Sélectionnez au moins une finalité:
+  </p>
+  <table cellpadding="2" cellspacing="5" width="100%"> 
+ <tr>
+
+
+ <td><input type="checkbox" name="finalite_inventaire" id="finalite_inventaire" <?php if (isset ($_POST['finalite_inventaire']))  {echo 'checked="checked"';}?> /> <label for="finalite_inventaire">Inventaire</label></td> 
+ <td><input type="checkbox" name="finalite_etude_genetique" id="finalite_etude_genetique" <?php if (isset ($_POST['finalite_etude_genetique']))  {echo 'checked="checked"';}?>   /> <label for="finalite_etude_genetique">Etude génétique</label></td>
+ </tr>
+  <tr>
+ <td><input type="checkbox" name="finalite_suivi_pop" id="finalite_suivi_pop" <?php if (isset ($_POST['finalite_suivi_pop']))  {echo 'checked="checked"';}?>   /> <label for="finalite_suivi_pop">Suivi de population</label></td>
+ <td><input type="checkbox" name="finalite_etude_biometrique" id="finalite_etude_biometrique" <?php if (isset ($_POST['finalite_etude_biometrique']))  {echo 'checked="checked"';}?>   /> <label for="finalite_etude_biometrique">Etude biométrique</label></td>
+</tr>
+<tr>
+ <td><input type="checkbox" name="finalite_etude_ecoethologique" id="finalite_etude_ecoethologique" <?php if (isset ($_POST['finalite_etude_ecoethologique']))  {echo 'checked="checked"';}?>   /> <label for="finalite_etude_ecoethologique">Etude ecoethologique</label></td>
+ <td><input type="checkbox" name="finalite_etude_physiologique" id="finalite_etude_physiologique" <?php if (isset ($_POST['finalite_etude_physiologique']))  {echo 'checked="checked"';}?>   /> <label for="finalite_etude_physiologique">Etude physiologique</label></td> 
+  </tr>
+  <tr>
+ <td><input type="checkbox" name="finalite_etude_parasitologique" id="finalite_etude_parasitologique" <?php if (isset ($_POST['finalite_etude_parasitologique']))  {echo 'checked="checked"';}?>   /> <label for="finalite_etude_parasitologique">Etude parasitologique</label></td>
+ <td><input type="checkbox" name="finalite_etude_epidemiologique" id="finalite_etude_epidemiologique" <?php if (isset ($_POST['finalite_etude_epidemiologique']))  {echo 'checked="checked"';}?>   /> <label for="finalite_etude_epidemiologique">Etude épidemiologique</label></td> 
+ </tr>
+<tr>
+ <td><input type="checkbox" name="finalite_autre_checkbox" id="finalite_autre_checkbox" <?php if (isset ($_POST['finalite_autre_checkbox']))  {echo 'checked="checked"';}?>   /> <label for="finalite_autre_checkbox">Autres </label>(préciser ci-dessous):
+ </td> 
+ </tr>
+  </table>
+ &nbsp <input type="text" name="finalite_autre" size="50" value="<?php echo (isset($_POST['finalite_autre']) ? $_POST['finalite_autre'] : ''); ?>"  />
+
+   </p>
+ &nbsp <b> Préciser en annexe le programme dans lequel s'inscrit la demande, l'objectif, les méthodes, les résultats attendus et leur portée (max. 2 pages).</br>
+ &nbsp Joindre tout avis externe sur la nécéssité de travailler sur ces espèces.
+</b>
+</p>
+  </div> 
+  
+  
+     <div style="height:30px;display:block;"> </div> 
+<!-- div pour le choix de la finalité-->
+ <div id="choix_modalites" style="border:1px solid black">
+  <h4>E. MODALITES ET TECHNIQUES DE CAPTURE OU DE PRELEVEMENT</h4>
+  </p>
+&nbsp E1. <u>Type de capture</u> (un) </br>
+   <table cellpadding="2" cellspacing="5"> 
+
+
+ <tr>
+ <td width="35%"><input type="radio" name="type_capture" id="euthanasie" value="euthanasie"   <?php if (isset ($_POST['type_capture']) && $_POST['type_capture']=="euthanasie")  {echo 'checked="checked"';}?>   /> <label for="euthanasie">Euthanasie</label></td> 
+
+ <td><input type="radio" name="type_capture" id="temporaire_relache_differe" value="temporaire_relache_differe"   <?php if (isset ($_POST['type_capture']) && $_POST['type_capture']=="temporaire_relache_differe")  {echo 'checked="checked"';}?>   /> <label for="temporaire_relache_differe">Capture temporaire avec relaché différe</label></td> 
+ </tr>
+ <tr>
+  <td><input type="radio" name="type_capture" id="definitive" value="definitive"   <?php if (isset ($_POST['type_capture']) && $_POST['type_capture']=="definitive")  {echo 'checked="checked"';}?>   /> <label for="definitive">Définitive</label></td>  
+
+  <td><input type="radio" name="type_capture" id="temporaire_relache_immediat" value="temporaire_relache_immediat"   <?php if (isset ($_POST['type_capture']) && $_POST['type_capture']=="temporaire_relache_immediat")  {echo 'checked="checked"';}?>   /> <label for="temporaire_relache_immediat"> Capture temporaire avec relâché immédiat</label></td>
+ </tr>
+  </table>
+</p>
+&nbsp E2. <u>Mode de capture</u> (au moins un) </br>
+  <table cellpadding="2" cellspacing="5"> 
+ <tr>
+  <td><input type="checkbox" name="mode_capture_manuelle" id="mode_capture_manuelle"  <?php if (isset ($_POST['mode_capture_manuelle']))  {echo 'checked="checked"';}?>  /> <label for="mode_capture_manuelle">manuelle</label></td> 
+  <td><input type="checkbox" name="mode_capture_aufilet" id="mode_capture_aufilet"  <?php if (isset ($_POST['mode_capture_aufilet']))  {echo 'checked="checked"';}?>  /> <label for="mode_capture_aufilet">au filet</label></td> 
+   </tr>
+ <tr>
+   <td><input type="checkbox" name="mode_capture_pieges" id="mode_capture_pieges"  <?php if (isset ($_POST['mode_capture_pieges']))  {echo 'checked="checked"';}?>  /> <label for="mode_capture_pieges">pièges</label></td> 
+  <td></td>
+     </tr>
+ <tr>
+     <td><input type="checkbox" name="mode_capture_autre_checkbox" id="mode_capture_autre_checkbox" <?php if (isset ($_POST['mode_capture_autre_checkbox']))  {echo 'checked="checked"';}?>   /> <label for="mode_capture_autre_checkbox">autre (préciser ci-dessous)</label></td> 
+  <td></td>
+     </tr>
+	 </table>
+ &nbsp <input type="text" name="mode_capture_autre" size="50" value="<?php echo (isset($_POST['mode_capture_autre']) ? $_POST['mode_capture_autre'] : ''); ?>"  />
+	    </p>
+  </div> 
+  
+  
+     <div style="height:30px;display:block;"> </div> 
+<!-- div pour le choix de la technique de marquage-->
+ <div id="choix_modalites" style="border:1px solid black">
+  <h4>F. TECHNIQUE DE MARQUAGE</h4>
+  </p>
+&nbsp F1.<u>Marquage</u> </br>
+<input type="radio" name="marquage" id="marquage_oui" value="oui" <?php if (isset ($_POST['marquage']) && $_POST['marquage']=="oui")  {echo 'checked="checked"';}?>   /> <label for="marquage_oui">OUI</label> (si oui décrire via les points F2/F3/F4)</br>
+<input type="radio" name="marquage" id="marquage_non" value="non" <?php if (isset ($_POST['marquage']) && $_POST['marquage']=="non")  {echo 'checked="checked"';}?>   /> <label for="marquage_non">NON</label> </p>
+&nbsp F2.<u> Marquage léger</u></br>
+  <table cellpadding="2" cellspacing="5" width="100%"> 
+ <tr>
+  <td><input type="checkbox" name="marquage_fishtag" id="marquage_fishtag" <?php if (isset ($_POST['marquage_fishtag']))  {echo 'checked="checked"';}?>   /> <label for="marquage_fishtag">Fishtag</label></td> 
+  <td><input type="checkbox" name="marquage_baguesplastiques" id="marquage_baguesplastiques" <?php if (isset ($_POST['marquage_baguesplastiques']))  {echo 'checked="checked"';}?>   /> <label for="marquage_baguesplastiques">Bagues plastique</label></td> 
+  <td><input type="checkbox" name="marquage_porcimark" id="marquage_porcimark" <?php if (isset ($_POST['marquage_porcimark']))  {echo 'checked="checked"';}?>   /> <label for="marquage_porcimark">Porcimark</label></td> 
+ <td><input type="checkbox" name="marquage_nyanzol" id="marquage_nyanzol" <?php if (isset ($_POST['marquage_nyanzol']))  {echo 'checked="checked"';}?>   /> <label for="marquage_nyanzol">Nyanzol</label></td> 
+ <td> <input type="checkbox" name="marquage_leger_autre_checkbox" id="marquage_leger_autre_checkbox" <?php if (isset ($_POST['marquage_leger_autre_checkbox']))  {echo 'checked="checked"';}?>   /> <label for="marquage_leger_autre_checkbox">autre (préciser:)</label>
+<input type="text" name="marquage_leger_autre" size="50" value="<?php echo (isset($_POST['marquage_leger_autre']) ? $_POST['marquage_leger_autre'] : ''); ?>"  />
+ </td>
+ </tr>
+ </table>
+
+ </p>
+&nbsp F3.<u> Marquage définitif</u></br>
+  <table cellpadding="2" cellspacing="5"  width="100%"> 
+ <tr>
+  <td><input type="checkbox" name="marquage_baguemetal" id="marquage_baguemetal" <?php if (isset ($_POST['marquage_baguemetal']))  {echo 'checked="checked"';}?>   /> <label for="marquage_baguemetal">Bague métal</label></td> 
+  <td><input type="checkbox" name="marquage_aileron" id="marquage_aileron" <?php if (isset ($_POST['marquage_aileron']))  {echo 'checked="checked"';}?>   /> <label for="marquage_aileron">Aileron (bague plastique)</label></td> 
+  <td><input type="checkbox" name="marquage_transpondeur" id="marquage_transpondeur"  <?php if (isset ($_POST['marquage_transpondeur']))  {echo 'checked="checked"';}?>  /> <label for="marquage_transpondeur">Transpondeur</label></td> 
+ <td> <input type="checkbox" name="marquage_definitif_autre_checkbox" id="marquage_definitif_autre_checkbox"  <?php if (isset ($_POST['marquage_definitif_autre_checkbox']))  {echo 'checked="checked"';}?>  /> <label for="marquage_definitif_autre_checkbox">autre (préciser:)</label>
+<input type="text" name="marquage_definitif_autre" size="50" value="<?php echo (isset($_POST['marquage_definitif_autre']) ? $_POST['marquage_definitif_autre'] : ''); ?>"  />
+ </td>
+ </tr>
+ </table>
+ </p>
+&nbsp  F4.<u> Autre</u> (décrire et justifier ci-dessous:)</br>
+  &nbsp <input type="text" name="marquage_autre" size="100" value="<?php echo (isset($_POST['marquage_autre']) ? $_POST['marquage_autre'] : ''); ?>"  />
+</p>
+  &nbsp NB: Il est rappelé que tout prélèvement d'animaux mort est soumis à la même réglementation et donc au même type de demande.
+ 	    </p>
+  </div> 
+  
+    <div style="height:30px;display:block;"> </div> 
+<!-- div pour le choix de la pose de materiel-->
+ <div id="choix_equipement" style="border:1px solid black">
+  <h4>G. EQUIPEMENT (POSE DE MATERIEL)</h4>
+  </p>
+&nbsp G1.<u>Equipement ou pose de matériel</u> </br>
+<input type="radio" name="equipement" id="equipement_oui" value="oui" <?php if (isset ($_POST['equipement']) && $_POST['equipement']=="oui")  {echo 'checked="checked"';}?>   /> <label for="equipement_oui">OUI</label> (si oui décrire via les points G2/G3)</br>
+<input type="radio" name="equipement" id="equipement_non" value="non" <?php if (isset ($_POST['equipement']) && $_POST['equipement']=="non")  {echo 'checked="checked"';}?>   /> <label for="equipement_non">NON</label> </p>
+&nbsp G2.<u> Externe</u></br>
+  <table cellpadding="2" cellspacing="5" width="100%"> 
+ <tr> 
+  <td><input type="checkbox" name="equipement_gps" id="equipement_gps"  <?php if (isset ($_POST['equipement_gps']))  {echo 'checked="checked"';}?>  /> <label for="equipement_gps">GPS</label></td> 
+  <td><input type="checkbox" name="equipement_gls" id="equipement_gls"  <?php if (isset ($_POST['equipement_gls']))  {echo 'checked="checked"';}?>  /> <label for="equipement_gls">GLS</label></td> 
+  <td><input type="checkbox" name="equipement_vhf" id="equipement_vhf"  <?php if (isset ($_POST['equipement_vhf']))  {echo 'checked="checked"';}?>  /> <label for="equipement_vhf">VHF</label></td> 
+   <td><input type="checkbox" name="equipement_argos" id="equipement_argos" <?php if (isset ($_POST['equipement_argos']))  {echo 'checked="checked"';}?>   /> <label for="equipement_argos">ARGOS</label></td>  
+ <td> <input type="checkbox" name="equipement_externe_autre_checkbox" id="equipement_externe_autre_checkbox"  <?php if (isset ($_POST['equipement_externe_autre_checkbox']))  {echo 'checked="checked"';}?>  /> <label for="equipement_externe_autre_checkbox">autre (préciser:)</label>
+<input type="text" name="equipement_externe_autre" size="50" value="<?php echo (isset($_POST['equipement_externe_autre']) ? $_POST['equipement_externe_autre'] : ''); ?>"  />
+ </td>
+ </tr>
+ </table> 
+   </p>
+ &nbsp G3.<u> Interne</u></br>
+  <table cellpadding="2" cellspacing="5" width="100%"> 
+ <tr> 
+  <td><input type="checkbox" name="equipement_interne_sondeoesophagienne" id="equipement_interne_sondeoesophagienne"  <?php if (isset ($_POST['equipement_interne_sondeoesophagienne']))  {echo 'checked="checked"';}?>  /> <label for="equipement_interne_sondeoesophagienne">Sonde oesophagienne</label></td>  
+ <td> <input type="checkbox" name="equipement_interne_autre_checkbox" id="equipement_interne_autre_checkbox"  <?php if (isset ($_POST['equipement_interne_autre_checkbox']))  {echo 'checked="checked"';}?>  /> <label for="equipement_interne_autre_checkbox">autre (préciser:)</label>
+<input type="text" name="equipement_interne_autre" size="50" value="<?php echo (isset($_POST['equipement_interne_autre']) ? $_POST['equipement_interne_autre'] : ''); ?>"  />
+ </td>
+ </tr>
+ </table> 
+  	    </p>
+  </div> 
+  
+    <div style="height:30px;display:block;"> </div> 
+<!-- div pour le choix des prélevements-->
+ <div id="choix_prelevements" style="border:1px solid black">
+  <h4>H. PRELEVEMENTS ENVISAGES</h4>
+  </p>
+ </p>
+&nbsp H1.<u>Prélèvements</u> </br>
+<input type="radio" name="prelevement" id="prelevement_oui" value="oui" <?php if (isset ($_POST['prelevement']) && $_POST['prelevement']=="oui")  {echo 'checked="checked"';}?>   /> <label for="prelevement_oui">OUI</label> (si oui décrire via les points H2/H3)</br>
+<input type="radio" name="prelevement" id="prelevement_non" value="non" <?php if (isset ($_POST['prelevement']) && $_POST['prelevement']=="non")  {echo 'checked="checked"';}?>   /> <label for="prelevement_non">NON</label> </p>
+&nbsp H2.<u> Nature des prélèvements</u></br> 
+<input type="checkbox" name="prelevement_lavagestomacal" id="prelevement_lavagestomacal" <?php if (isset ($_POST['prelevement_lavagestomacal']))  {echo 'checked="checked"';}?>   /> <label for="prelevement_lavagestomacal">Lavave stomacal</label></br>
+<input type="checkbox" name="prelevement_prisedesang" id="prelevement_prisedesang"  <?php if (isset ($_POST['prelevement_prisedesang']))  {echo 'checked="checked"';}?>  /> <label for="prelevement_prisedesang">Prise de sang</label></br>
+<input type="checkbox" name="prelevement_muscles" id="prelevement_muscles"  <?php if (isset ($_POST['prelevement_muscles']))  {echo 'checked="checked"';}?>  /> <label for="prelevement_muscles">Muscles</label></br>
+<input type="checkbox" name="prelevement_autre_checkbox" id="prelevement_autre_checkbox"  <?php if (isset ($_POST['prelevement_autre_checkbox']))  {echo 'checked="checked"';}?>  /> <label for="prelevement_autre_checkbox">autre (préciser:)</label>
+<input type="text" name="prelevement_autres" size="80" value="<?php echo (isset($_POST['prelevement_autres']) ? $_POST['prelevement_autres'] : ''); ?>"  />
+</p>
+&nbsp H3.<u>Intervention chirugicale</u> </br>
+<input type="radio" name="intervention_chirugicale" id="intervention_chirugicale_oui" value="oui" <?php if (isset ($_POST['intervention_chirugicale']) && $_POST['intervention_chirugicale']=="oui")  {echo 'checked="checked"';}?>   /> <label for="intervention_chirugicale_oui">OUI</label> (si oui préciser le type d'intervention chirugicale:) <input type="text" name="prelevement_type_interventionchirugicale" size="80" value="<?php echo (isset($_POST['prelevement_type_interventionchirugicale']) ? $_POST['prelevement_type_interventionchirugicale'] : ''); ?>"  />
+</br>
+<input type="radio" name="intervention_chirugicale" id="intervention_chirugicale_non" value="non" <?php if (isset ($_POST['intervention_chirugicale']) && $_POST['intervention_chirugicale']=="non")  {echo 'checked="checked"';}?>   /> <label for="intervention_chirugicale_non">NON</label>   	    </p>
+  </div> 
+  
+  
+  
+  
+  
+      <div style="height:60px;display:block;"> </div> 
+<!-- div pour le nombre d'especes concernees-->
+ <div id="choix_nb_especes_concernees" style="border:1px solid black">
+  <h4>I. IDENTIFICATION DES SPECIMENS ET NOMBRE D'INDIVIDUS CONCERNES PAR LA MANIPULATION</h4>
+ &nbsp Choisissez les spécimens dans la liste ci-dessous et indiquez le nombre d'individus subissant la manipulation pour chaque espèce.</p>
+  Codes:</br>
+
+ &nbsp <table border="1">
+  <tr><td><b>A.M.</b></td><td> Nombre d'adultes mâles</td></tr>
+  <tr><td><b>A.F.</b></td><td> Nombre d'adultes femelles</td></tr>
+  <tr><td><b>A.I.</b></td><td> Nombre d'adultes indéterminés</td></tr>
+  <tr><td><b>J.M.</b></td><td> Nombre de juvéniles mâles</td></tr>
+  <tr><td><b>J.F.</b></td><td> Nombre de juvéniles femelles</td></tr>
+  <tr><td><b>J.I.</b></td><td> Nombre de juvéniles indéterminés</td></tr>
+  <tr><td><b>I.</b></td><td> Nombre d'individus indéterminés</td></tr>
+ <tr><td> <b>O.</b></td><td> Nombre d'oeufs</td></tr>
+  </table>
+  </P>
+  
+  </p>
+  <strong>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+  Espèce 
+  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+  A.M.   
+  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+  A.F. 
+    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+  A.I. 
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+   J.M. 
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+   J.F. 
+  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+  J.I.  
+  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  
+  I. 
+    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+  O.</strong>
+  </br>
+  
+
+  <script type="text/javascript">
+		 var choices=[];
+choices[0]="NA";
+		 var display=[];
+display[0]="";
+<?php
+		$i=1;
+		$reponse=$bdd->query('SELECT * FROM demande_manipulation_especes.especes ORDER BY classe DESC,nom_commun ASC');
+				while ($esp=$reponse->fetch()){
+				echo 'choices['.$i.']="'.$esp['nom_commun'].'";';
+				echo 'display['.$i.']="'.$esp['nom_commun'].' - '.$esp['nom_scientifique'].'";';
+				$i=$i+1;
+} 
+  if (isset($erreur)) { $debut=($nbespeces+1);} else {$debut=1;}
+if ($debut==0) {$debut=1;}
+?>			
+var numespece=<?php echo $debut; ?> ;
+function addInput(divName){
+
+    var newDiv=document.createElement('div');
+    var selectHTML = "";
+    selectHTML +="<select name=\"espece_"+numespece+"\">";
+    for(i=0; i<choices.length; i=i+1){
+        selectHTML += "<option value='"+choices[i]+"'>"+display[i]+"</option>";
+    }
+        selectHTML += "</select>&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_adultes_males_"+numespece+"\">&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_adultes_femelles_"+numespece+"\">&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_adultes_indetermines_"+numespece+"\">&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_juveniles_males_"+numespece+"\" >&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_juveniles_femelles_"+numespece+"\">&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_juveniles_indetermines_"+numespece+"\" >&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_indetermines_"+numespece+"\">&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "<input type=\"text\" size=\"2\" name=\"nb_oeufs_"+numespece+"\" >&nbsp &nbsp &nbsp &nbsp";
+		selectHTML += "</p>";
+    newDiv.innerHTML= selectHTML;
+    document.getElementById(divName).appendChild(newDiv);
+	numespece=numespece+1;
+}
+</script>
+  
+  <?php 
+  if (isset($erreur)){
+  for  ($j = 1; $j <= ($nbespeces); $j++) {
+  $espece='espece_'.$j;
+$nb_adultes_males='nb_adultes_males_'.$j;
+$nb_adultes_femelles='nb_adultes_femelles_'.$j;
+$nb_adultes_indetermines='nb_adultes_indetermines_'.$j;
+$nb_juveniles_males='nb_juveniles_males_'.$j;
+$nb_juveniles_femelles='nb_juveniles_femelles_'.$j;
+$nb_juveniles_indetermines='nb_juveniles_indetermines_'.$j;
+$nb_indetermines='nb_indetermines_'.$j;
+$nb_oeufs='nb_oeufs_'.$j;
+
+  echo '<select name="'.$espece.'">';
+$reponse=$bdd->query('SELECT * FROM demande_manipulation_especes.especes ORDER BY nom_commun ASC');
+while ($esp=$reponse->fetch()){ ?>
+<option value="<?php echo $esp['nom_commun'] ?>" <?php echo (isset($_POST[$espece]) && $_POST[$espece] == $esp['nom_commun'] ? ' selected="selected" ' : '');?> > <?php echo $esp['ordre'].' - '.$esp['famille'].' - '.$esp['nom_scientifique'].' - '.$esp['nom_commun']; ?></option> 
+<?php } echo '</select> &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_adultes_males_'.$j.'" value="'.$_POST[$nb_adultes_males].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_adultes_femelles_'.$j.'" value="'.$_POST[$nb_adultes_femelles].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_adultes_indetermines_'.$j.'" value="'.$_POST[$nb_adultes_indetermines].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_juveniles_males_'.$j.'" value="'.$_POST[$nb_juveniles_males].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_juveniles_femelles_'.$j.'" value="'.$_POST[$nb_juveniles_femelles].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_juveniles_indetermines_'.$j.'" value="'.$_POST[$nb_juveniles_indetermines].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_indetermines_'.$j.'" value="'.$_POST[$nb_indetermines].'"  >&nbsp &nbsp &nbsp &nbsp
+<input type="text" size="2" name="nb_oeufs_'.$j.'" value="'.$_POST[$nb_oeufs].'"  >&nbsp &nbsp &nbsp &nbsp
+
+</p>'; } 
+}
+
+?>				
+				
+		</p>		
+	 <div id="dynamicInput"></div>
+   &nbsp   <input type="button" value="Ajouter une espèce" onclick="addInput('dynamicInput')" />
+	  
+   </p> 
+  </div>
+  <div style="height:30px;display:block;"> </div> 
+  
+    	    </p>
+  </div>  
+   <div style="height:30px;display:block;"> </div> 
+<!-- div pour les commentaires et annexes-->
+ <div id="commentaires_et_annexes" style="border:1px solid black">
+  <h4>Commentaires et annexes</h4>
+ </p>
+&nbsp  Saisissez ci-dessous les éventuels commentaires ou remarques concernant la manipulation:</p>
+&nbsp  
+
+<textarea name="commentaires" rows="8" cols="45"><?php echo (isset($_POST['commentaires']) ? $_POST['commentaires'] : ''); ?></textarea>
+
+
+</p>
+&nbspJoignez votre éventuelle annexe grace au lien ci-dessous: (taille max: 8 Mo. Si la taille du fichier est supérieure à 8 Mo, merci de l'envoyer par mail à paul.taconet@taaf.fr)</p>
+<?php if(isset($erreur)){ echo '<font color="red"><b> Merci de ressaisir la pièce jointe avant de valider</b></font></p>';} ?> 
+
+&nbsp<input type="file" name="annexe" />
+</p>  
+  
+  </div>
+      <div style="height:60px;display:block;"> </div> 
+ &nbsp <input type="submit" name="submit" value="Valider" />
+   
+<?php unset($erreur); ?>  
+</body>
+ </html>

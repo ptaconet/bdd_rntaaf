@@ -1,0 +1,45 @@
+<?php
+session_start();
+include('coordonnees_de_session.php');
+require_once('../config.php');
+
+//tester si le fichier a bien été envoyé et s'il n'y a pas d'erreur
+
+if(!empty($_FILES['annexe']['name'])) {
+
+if ($_FILES['annexe']['size']>=8000000){
+echo 'Le fichier est trop volumineux. Merci de l\'envoyer par mail à paul.taconet@taaf.fr';
+$erreur_fichier=true;
+}
+
+$infosfichier=pathinfo($_FILES['annexe']['name']);
+$extension_upload=$infosfichier['extension'];
+$extension_autorisees=array('jpg','jpeg','gif','png','doc','docx','pdf','xls','xlsx');
+
+if (!in_array($extension_upload,$extension_autorisees)){
+echo 'Votre fichier n\'est pas autorisé. Merci d\'envoyer un fichier au format: jpg, jpeg, gif, png, doc, docx, pdf, xls, xlsx';
+$erreur_fichier=true;
+}
+
+//s'il n'y a pas d'erreur, on enregistre le fichier
+if(!isset($erreur_fichier)){
+$nom='annexes/2014_2015/'.$numero_demande.'_'.$_POST['programme'].'_'.$district.'_'.$_POST['sites'].'.'.$extension_upload;
+$resultat = move_uploaded_file($_FILES['annexe']['tmp_name'],$nom );
+if (!$resultat) {echo "Transfert échoué";$erreur_fichier=true;}
+}
+
+
+}
+if(!isset($erreur_fichier)){
+
+$requete = $bdd->prepare('UPDATE demande_manipulation_especes.demande SET piece_jointe=TRUE WHERE numero_demande=?');
+$requete->execute(array($_SESSION['numero_demande'])) or die(print_r($requete->errorInfo()));
+header("Location:demande_prise_en_compte.php",TRUE,301);
+exit();
+}
+else
+{
+echo 'erreur';
+}
+
+?>

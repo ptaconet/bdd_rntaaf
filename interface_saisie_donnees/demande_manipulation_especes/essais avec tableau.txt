@@ -1,0 +1,133 @@
+  <table border="1">
+  <tr>
+  <td>Espèce</td><td> A.M</td><td>Espèce</td><td>Espèce</td><td>Espèce</td><td>Espèce</td><td>Espèce</td><td>Espèce</td><td>Espèce</td>
+  </tr>
+  
+  <script type="text/javascript">
+		 var choices=[];
+choices[0]="NA";
+		 var display=[];
+display[0]="";
+<?php
+		$i=1;
+		$reponse=$bdd->query('SELECT * FROM demande_manipulation_especes.especes ORDER BY nom_commun ASC');
+				while ($esp=$reponse->fetch()){
+				echo 'choices['.$i.']="'.$esp['nom_commun'].'";';
+				echo 'display['.$i.']="'.$esp['ordre'].' - '.$esp['famille'].' - '.$esp['nom_scientifique'].' - '.$esp['nom_commun'].'";';
+				$i=$i+1;
+} 
+  if (isset($erreur)) { $debut=($nbespeces+1);} else {$debut=1;}
+
+?>			
+var numespece=<?php echo $debut; ?> ;
+function addInput(divName){
+
+    var newDiv=document.createElement('div');
+    var selectHTML = "";
+    selectHTML +="<tr><td><select name=\"espece_"+numespece+"\">";
+    for(i=0; i<choices.length; i=i+1){
+        selectHTML += "<option value='"+choices[i]+"'>"+display[i]+"</option>";
+    }
+        selectHTML += "</select></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_adultes_males_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_adultes_femelles_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_adultes_indetermines_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_juveniles_males_"+numespece+"\" ></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_juveniles_femelles_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_juveniles_indetermines_"+numespece+"\" ></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_indetermines_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_oeufs_"+numespece+"\" ></td>";
+		selectHTML += "</tr>";
+    newDiv.innerHTML= selectHTML;
+    document.getElementById(divName).appendChild(newDiv);
+	numespece=numespece+1;
+}
+</script>
+  
+  <?php 
+  if (isset($erreur)){
+  for  ($j = 1; $j <= ($nbespeces); $j++) {
+  $espece='espece_'.$j;
+$nb_adultes_males='nb_adultes_males_'.$j;
+$nb_adultes_femelles='nb_adultes_femelles_'.$j;
+$nb_adultes_indetermines='nb_adultes_indetermines_'.$j;
+$nb_juveniles_males='nb_juveniles_males_'.$j;
+$nb_juveniles_femelles='nb_juveniles_femelles_'.$j;
+$nb_juveniles_indetermines='nb_juveniles_indetermines_'.$j;
+$nb_indetermines='nb_indetermines_'.$j;
+$nb_oeufs='nb_oeufs_'.$j;
+
+  echo '<tr><td><select name="'.$espece.'">';
+$reponse=$bdd->query('SELECT * FROM demande_manipulation_especes.especes ORDER BY nom_commun ASC');
+while ($esp=$reponse->fetch()){ ?>
+<option value="<?php echo $esp['nom_commun'] ?>" <?php echo (isset($_POST[$espece]) && $_POST[$espece] == $esp['nom_commun'] ? ' selected="selected" ' : '');?> > <?php echo $esp['ordre'].' - '.$esp['famille'].' - '.$esp['nom_scientifique'].' - '.$esp['nom_commun']; ?></option> 
+<?php } echo '</select> </td>
+<td><input type="text" size="5" name="nb_adultes_males_'.$j.'" value="'.$_POST[$nb_adultes_males].'"  ></td>
+<td><input type="text" size="5" name="nb_adultes_femelles_'.$j.'" value="'.$_POST[$nb_adultes_femelles].'"  ></td>
+<td><input type="text" size="5" name="nb_adultes_indetermines_'.$j.'" value="'.$_POST[$nb_adultes_indetermines].'"  ></td>
+<td><input type="text" size="5" name="nb_juveniles_males_'.$j.'" value="'.$_POST[$nb_juveniles_males].'"  ></td>
+<td><input type="text" size="5" name="nb_juveniles_femelles_'.$j.'" value="'.$_POST[$nb_juveniles_femelles].'"  ></td>
+<td><input type="text" size="5" name="nb_juveniles_indetermines_'.$j.'" value="'.$_POST[$nb_juveniles_indetermines].'"  ></td>
+<td><input type="text" size="5" name="nb_indetermines_'.$j.'" value="'.$_POST[$nb_indetermines].'"  ></td>
+<td><input type="text" size="5" name="nb_oeufs_'.$j.'" value="'.$_POST[$nb_oeufs].'"  ></td>
+
+</tr>'; } 
+}
+
+?>				
+				
+		</p>		
+	 <div id="dynamicInput"></div>
+      <input type="button" value="Ajouter une espèce" onclick="addInput('dynamicInput')" />
+	  </table>
+   </p> 
+  </div>
+  <div style="height:30px;display:block;"> </div> 
+  
+    	    </p>
+  </div>  
+   </p>
+  
+  Saisissez ci-dessous les éventuels commentaires ou remarques sur la manipulation:</p>
+  <textarea name="commentaires" rows="8" cols="45"></textarea>
+  
+   </p>
+  <input type="submit" name="submit" value="Valider" />
+   
+<?php unset($erreur); ?>  
+</body>
+ </html>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ var numespece=1;
+function addInput(divName){
+
+    var newDiv=document.createElement('div');
+    var selectHTML = "";
+	selectHTML = " <table cellpadding=\"1\" cellspacing=\"1\" border=\"0\">";
+	selectHTML += " <tr> <th> Espèce </th><th> A.M. </th><th> A.F. </th><th>A.I. </th><th> J.M. </th><th> J.F. </th><th>J.I. </th><th> I. </th><th> O. </th></tr>";
+    selectHTML +="<tr><td><select name=\"espece_"+numespece+"\">";
+    for(i=0; i<choices.length; i=i+1){
+        selectHTML += "<option value='"+choices[i]+"'>"+display[i]+"</option>";
+    }
+        selectHTML += "</select></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_adultes_males_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_adultes_femelles_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_adultes_indetermines_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_juveniles_males_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_juveniles_femelles_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_juveniles_indetermines_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_indetermines_"+numespece+"\"></td>";
+		selectHTML += "<td><input type=\"text\" size=\"5\" name=\"nb_oeufs_"+numespece+"\"></td>";
+		selectHTML += "</tr></table></p>";
+    newDiv.innerHTML= selectHTML;
+    document.getElementById(divName).appendChild(newDiv);
+	numespece=numespece+1;
+}

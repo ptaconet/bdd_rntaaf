@@ -1,0 +1,195 @@
+<?php
+
+// A. IDENTIFICATION DU DEMANDEUR
+//si les coordonnées sont bien remplies
+if (empty($_POST['adresse']) || empty($_POST['organisme_rattachement']) || empty($_POST['organisme_rattachement']) || empty($_POST['telephone']) || empty($_POST['mail'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>A1</b> </br>Vous n'avez pas saisi toutes les coordonnées.</font></p>";
+$erreur=true;
+}
+//si le programme a bien été saisi
+if (empty($_POST['titre_programme']) && $_POST['programme']=="NA") {
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>A2</b> </br>Vous n'avez pas saisi le programme.</font></p>";
+$erreur=true;
+}
+
+if (!empty($_POST['titre_programme']) && (empty($_POST['numero_programme']) || !is_numeric($_POST['numero_programme']))){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>A2</b> </br>Vous n'avez pas saisi de numéro de programme, ou le numéro de programme saisi n'est pas au format numérique.</font></p>";
+$erreur=true;
+}
+
+
+if (!empty($_POST['titre_programme']) && $_POST['programme']!="NA") {
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>A2</b> </br>Vous avez saisi programme dans la liste déroulante, mais vous avez aussi rempli la case pour un nouveau programme. Veuillez saisir uniquement l'un des deux.</font></p>";
+$erreur=true;
+}
+
+//C.DATES ET LIEUX DE CAPTURE OU DE PRELEVEMENT
+//si le site a bien été saisi
+if ($_POST['sites']=="NA") {
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>C2</b> </br>Vous n'avez pas saisi le site.</font></p>";
+$erreur=true;
+}
+
+//si les dates de validité ont bien été saisies
+if ($_POST['mois_debut']=="NA" || $_POST['annee_debut']=="NA"  || $_POST['mois_fin']=="NA"  || $_POST['annee_fin']=="NA"  ) {
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>C3</b> </br>Vous n'avez pas saisi l'ensemble des dates de début et de fin de validité.</font></p>";
+$erreur=true;
+}
+
+//D. FINALITE DE LA CAPTURE OU DU PRELEVEMENT
+//si au moins une finalité à été cochée
+if (!isset($_POST['finalite_inventaire']) && !isset($_POST['finalite_etude_genetique']) && !isset($_POST['finalite_suivi_pop']) && !isset($_POST['finalite_etude_biometrique']) && !isset($_POST['finalite_etude_ecoethologique']) && !isset($_POST['finalite_etude_physiologique']) && !isset($_POST['finalite_etude_parasitologique']) && !isset($_POST['finalite_etude_epidemiologique']) && !isset($_POST['finalite_autre_checkbox'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>D</b> </br>Cochez au moins 1 finalité.</font></p>";
+$erreur=true;
+}
+
+// si finalité=autres a été cochée, si on a bien justifié
+if (isset($_POST['finalite_autre_checkbox']) && empty($_POST['finalite_autre'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>D</b> </br>Vous avez coché la finalité \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+//E. MODALITES ET TECHNIQUES DE CAPTURE OU DE PRELEVEMENT
+//si au moins un type de capture a été coché
+if (!isset($_POST['type_capture'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>E1</b> </br>Cochez au moins 1 type de capture.</font></p>";
+$erreur=true;
+}
+
+
+//si au moins un mode de capture a été coché
+if (!isset($_POST['mode_capture_manuelle']) && !isset($_POST['mode_capture_aufilet']) && !isset($_POST['mode_capture_pieges']) && !isset($_POST['mode_capture_autre_checkbox'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>E2</b> </br>Cochez au moins 1 mode de capture.</font></p>";
+$erreur=true;
+}
+
+// si finalité=autres a été cochée, si on a bien justifié
+if (isset($_POST['mode_capture_autre_checkbox']) && empty($_POST['mode_capture_autre'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>E2</b> </br>Vous avez coché le mode de capture \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+//F. TECHNIQUE DE MARQUAGE
+if (!isset($_POST['marquage']) ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>F1</b> </br>Vous n'avez pas coché la présence (OUI) ou l'absence (NON) du type de marquage.</font></p>";
+$erreur=true;
+}
+
+//si marquage=oui, si au moins un marquage a été coché
+if (isset($_POST['marquage']) && $_POST['marquage']=="oui" && !isset($_POST['marquage_fishtag']) && !isset($_POST['marquage_baguesplastiques']) && !isset($_POST['marquage_porcimark']) && !isset($_POST['marquage_nyanzol']) && !isset($_POST['marquage_leger_autre_checkbox']) && !isset($_POST['marquage_baguemetal']) && !isset($_POST['marquage_aileron']) && !isset($_POST['marquage_transpondeur']) && !isset($_POST['marquage_definitif_autre_checkbox']) && empty($_POST['marquage_autre'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>F</b> </br>Vous avez coché \"technique de marquage\"=OUI (F1), mais vous n'avez coché/saisi aucune technique de marquage.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['marquage_leger_autre_checkbox']) && empty($_POST['marquage_leger_autre'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>F2</b> </br>Vous avez coché le marquage léger \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['marquage_definitif_autre_checkbox']) && empty($_POST['marquage_definitif_autre'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>F3</b> </br>Vous avez coché le marquage définitif \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+
+//G. EQUIPEMENT (POSE DE MATERIEL)
+if (!isset($_POST['equipement'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>G1</b> </br>Vous n'avez pas coché la présence (OUI) ou l'absence (NON) de pose d'equipement ou de matériel.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['equipement']) && $_POST['equipement']=="oui" && !isset($_POST['equipement_gps']) && !isset($_POST['equipement_gls']) && !isset($_POST['equipement_vhf']) && !isset($_POST['equipement_argos']) && !isset($_POST['equipement_externe_autre_checkbox']) && !isset($_POST['equipement_interne_sondeoesophagienne']) && !isset($_POST['equipement_interne_autre_checkbox'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>G</b> </br>Vous avez coché \"equipement et pose de matériel\"=OUI (F1), mais vous n'avez coché aucun equipement.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['equipement_externe_autre_checkbox']) && empty($_POST['equipement_externe_autre'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>G2</b> </br>Vous avez coché la pose d'équipement externe \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['equipement_interne_autre_checkbox']) && empty($_POST['equipement_interne_autre'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>G2</b> </br>Vous avez coché la pose d'équipement interne \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+// H. PRELEVEMENTS ENVISAGES
+if (!isset($_POST['prelevement']) ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>H1</b> </br>Vous n'avez pas coché la présence (OUI) ou l'absence (NON) de prélèvements envisagés.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['prelevement']) && $_POST['prelevement']=="oui" && !isset($_POST['prelevement_lavagestomacal']) && !isset($_POST['prelevement_prisedesang']) && !isset($_POST['prelevement_muscles']) && !isset($_POST['prelevement_autre_checkbox'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>H2</b> </br>Vous avez coché \"prélèvements\"=OUI (F1), mais vous n'avez coché aucun prélèvement.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['prelevement_autre_checkbox']) && empty($_POST['prelevement_autres'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>H2</b> </br>Vous avez coché la nature des prélèvements \"autre\", mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+if (!isset($_POST['intervention_chirugicale'])){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>H3</b> </br>Vous n'avez pas coché la présence (OUI) ou l'absence (NON) d'intervention chirugicale.</font></p>";
+$erreur=true;
+}
+
+if (isset($_POST['intervention_chirugicale_oui']) && empty($_POST['prelevement_type_interventionchirugicale'])  ){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>H3</b> </br>Vous avez coché la présence d'intervention chirugicale, mais vous n'avez pas précisé.</font></p>";
+$erreur=true;
+}
+
+//I. IDENTIFICATION DES SPECIMENS ET NOMBRE D'INDIVIDUS CONCERNES PAR LA MANIPULATION
+//présence d'au moins une espèce
+if (!isset($_POST['espece_1']) || $_POST['espece_1']=="NA"){
+echo "<FONT COLOR='red'>MESSAGE D'ERREUR: <b>I</b> </br>Vous n'avez pas saisi d'espèces.</font></p>";
+$erreur=true;
+}
+
+//recherche du nombre d'espèces saisies
+
+$i=1;
+$espece='espece_1';
+while(isset($_POST[$espece])){
+$espece='espece_'.$i;
+$i=$i+1;
+}
+$nbespeces=$i-2;
+//$nbespeces=1;
+//for  ($i = 2; $i <= 40; $i++) {
+//$espece='espece_'.$i;
+//if isset($_POST[$espece]) { $nbespeces=$i ;} else {break;}
+//}
+
+//test si au moins un des nombre d'individus a été renseigné
+for  ($i = 1; $i <=$nbespeces; $i++) {
+
+$espece='espece_'.$i;
+$nb_adultes_males='nb_adultes_males_'.$i;
+$nb_adultes_femelles='nb_adultes_femelles_'.$i;
+$nb_adultes_indetermines='nb_adultes_indetermines_'.$i;
+$nb_juveniles_males='nb_juveniles_males_'.$i;
+$nb_juveniles_femelles='nb_juveniles_femelles_'.$i;
+$nb_juveniles_indetermines='nb_juveniles_indetermines_'.$i;
+$nb_indetermines='nb_indetermines_'.$i;
+$nb_oeufs='nb_oeufs_'.$i;
+
+
+if($_POST[$espece]!="NA" && (
+(empty($_POST[$nb_adultes_males]) || (!empty($_POST[$nb_adultes_males]) && !is_numeric($_POST[$nb_adultes_males] ))) && 
+(empty($_POST[$nb_adultes_femelles]) || (!empty($_POST[$nb_adultes_femelles]) && !is_numeric($_POST[$nb_adultes_femelles] ))) && 
+(empty($_POST[$nb_adultes_indetermines]) || (!empty($_POST[$nb_adultes_indetermines]) && !is_numeric($_POST[$nb_adultes_indetermines] ))) && 
+(empty($_POST[$nb_juveniles_males]) || (!empty($_POST[$nb_juveniles_males]) && !is_numeric($_POST[$nb_juveniles_males] ))) && 
+(empty($_POST[$nb_juveniles_femelles]) || (!empty($_POST[$nb_juveniles_femelles]) && !is_numeric($_POST[$nb_juveniles_femelles] ))) && 
+(empty($_POST[$nb_juveniles_indetermines]) || (!empty($_POST[$nb_juveniles_indetermines]) && !is_numeric($_POST[$nb_juveniles_indetermines] ))) && 
+(empty($_POST[$nb_indetermines]) || (!empty($_POST[$nb_indetermines]) && !is_numeric($_POST[$nb_indetermines] ))) &&
+(empty($_POST[$nb_oeufs]) || (!empty($_POST[$nb_oeufs]) && !is_numeric($_POST[$nb_oeufs] )))
+)){
+echo '<FONT COLOR=\'red\'>MESSAGE D\'ERREUR: <b>I</b> </br>Pour l\'espece à la '.$i.'ème ligne, vous n\'avez saisi aucune donnée ou une des données saisies n\'est pas numérique.</font></p>';
+$erreur=true;
+}
+
+}
+
+
+?>
