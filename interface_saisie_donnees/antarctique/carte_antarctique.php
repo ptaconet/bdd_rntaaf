@@ -1,0 +1,85 @@
+<?php 
+session_start();
+require_once('config.php');
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+<head>
+  <title>MapServer Simple Viewer</title>
+  <meta http-equiv="Content-Type" content="text/html";
+charset="utf-8" />
+        <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
+    <script type="text/javascript" src="../openlayers/OpenLayers.js"></script>
+
+    </head>
+    <body>
+	Utiliser les fleches + et - ou la molette de la souris pour zoomer/dezoomer et deplacez-vous sur la carte comme vous le souhaitez.</br>
+	En zoomant, le nom et le numéro des zones apparaissent sur les zones correspondantes.</p>
+      
+<?php 
+$requete=$bdd->prepare('SELECT st_x(st_transform(st_setsrid(geom,4326),900913)),st_y(st_transform(st_setsrid(geom,4326),900913)) from donnees_carto.toponymie_antarctique_scar_total WHERE toponymie_antarctique_scar_total.gid=:gid');
+	$requete->execute(array('gid'=>$_POST['nom'])) or die(print_r($requete->errorInfo()));
+		while ($bboxtransect=$requete->fetch()){
+		$xmin=$bboxtransect['st_x']-50000;
+		$ymin=$bboxtransect['st_y']-50000;
+		$xmax=$bboxtransect['st_x']+50000;
+		$ymax=$bboxtransect['st_y']+50000;
+		}
+
+
+
+?>	  
+	  <div style="width:1000; height:800;border:1px solid blue;" id="map"></div>
+      <script defer="defer" type="text/javascript">
+  var map = new OpenLayers.Map('map',
+                                     // mettre les coordonnees (bounds) dans le systeme de projection du district
+									 {maxExtent: 
+new OpenLayers.Bounds(-20037508.34, -20037508.34,20037508.34, 20037508.34),
+//new OpenLayers.Bounds( <?php echo '.$xmin.','.$ymin.','.$xmax.','.$ymax' ?>), 
+                                      projection: new OpenLayers.Projection('EPSG:900913'), displayProjection: new OpenLayers.Projection('EPSG:4326')
+               });     
+
+  
+var toponymie = new OpenLayers.Layer.WMS( "toponymie", "http://193.253.99.148/cgi-bin/mapserv?map=/var/www/antarctique/mapfile_antarctique.map&",
+
+ {layers:'toponymie',transparent: true,srs:'EPSG:4326'}, {isBaseLayer: false}
+);
+
+
+ var lieu_choisi = new OpenLayers.Layer.WMS( "lieu choisi", "http://193.253.99.148/cgi-bin/mapserv?map=/var/www/antarctique/mapfile_antarctique.map&",
+
+  {layers:'lieu_choisi',transparent: true,nomendroit:'<?php echo $_POST['nom'] ?>',srs:'EPSG:4326'}, {isBaseLayer: false}
+ );
+
+    var osm = new OpenLayers.Layer.OSM("OSM");
+      var gmap_satellite =  new OpenLayers.Layer.Google(
+                "Google Satellite",
+                {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+            );
+    var gmap_terrain =  new OpenLayers.Layer.Google(
+                "Google Terrain",
+                {type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 22}
+            );
+
+ //  var osm = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22} );
+ //var osm  new OpenLayers.Layer.Google("Google Streets", // the default{numZoomLevels: 20});
+
+
+map.addLayers([toponymie,osm,lieu_choisi,gmap_satellite,gmap_terrain]);
+
+            //Add a mouse position control
+            map.addControl(new OpenLayers.Control.MousePosition({displayProjection:new OpenLayers.Projection('EPSG:4326') }));
+
+            // Add a layer switcher control
+            map.addControl(new OpenLayers.Control.LayerSwitcher({}));
+
+if(!map.getCenter()){
+                map.zoomToExtent(new OpenLayers.Bounds( <?php echo $xmin.','.$ymin.','.$xmax.','.$ymax ?>));
+            }
+
+      </script>
+
+
+	 
+</body>
+</html>

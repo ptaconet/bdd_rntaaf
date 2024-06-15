@@ -1,0 +1,1 @@
+arial    /var/www/polices_ecriture/arial.ttf

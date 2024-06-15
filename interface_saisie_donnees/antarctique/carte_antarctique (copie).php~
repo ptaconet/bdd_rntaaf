@@ -1,0 +1,53 @@
+<?php 
+session_start();
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+<head>
+  <title>MapServer Simple Viewer</title>
+  <meta http-equiv="Content-Type" content="text/html";
+charset="utf-8" />
+    <script type="text/javascript" src="../openlayers/OpenLayers.js"></script>
+    </head>
+    <body>
+	Utiliser les fleches + et - ou la molette de la souris pour zoomer/dezoomer et deplacez-vous sur la carte comme vous le souhaitez.</br>
+	En zoomant, le nom et le numéro des zones apparaissent sur les zones correspondantes.</p>
+      
+	  
+	  <div style="width:1000; height:800;border:1px solid blue;" id="map"></div>
+      <script defer="defer" type="text/javascript">
+  var map = new OpenLayers.Map('map',
+                                     // mettre les coordonnees (bounds) dans le systeme de projection du district
+									 {maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,20037508.34, 20037508.34),
+                                      projection: new OpenLayers.Projection('EPSG:900913'), displayProjection: new OpenLayers.Projection('EPSG:4326')
+               });     
+
+  
+var toponymie = new OpenLayers.Layer.WMS( "toponymie", "http://192.168.1.40/cgi-bin/mapserv?map=/var/www/antarctique/mapfile_antarctique.map&",
+
+ {layers:'toponymie',transparent: true,srs:'EPSG:4326'}, {isBaseLayer: false}
+);
+
+    var osm = new OpenLayers.Layer.OSM("OSM");
+   
+
+
+
+map.addLayers([toponymie,osm]);
+
+            //Add a mouse position control
+            map.addControl(new OpenLayers.Control.MousePosition({displayProjection:new OpenLayers.Projection('EPSG:4326') }));
+
+            // Add a layer switcher control
+            map.addControl(new OpenLayers.Control.LayerSwitcher({}));
+
+if(!map.getCenter()){
+                map.zoomToMaxExtent();
+            }
+
+      </script>
+
+
+	 
+</body>
+</html>

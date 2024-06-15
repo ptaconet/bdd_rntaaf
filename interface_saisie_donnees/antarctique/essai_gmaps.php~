@@ -1,0 +1,56 @@
+<?php 
+session_start();
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+<head>
+  <title>MapServer Simple Viewer</title>
+  <meta http-equiv="Content-Type" content="text/html";
+charset="utf-8" />
+    <script type="text/javascript" src="../openlayers/OpenLayers.js"></script>
+    </head>
+    <body>
+	Utiliser les fleches + et - ou la molette de la souris pour zoomer/dezoomer et deplacez-vous sur la carte comme vous le souhaitez.</br>
+	En zoomant, le nom et le numéro des zones apparaissent sur les zones correspondantes.</p>
+      
+	  
+	  <div style="width:1000; height:800;border:1px solid blue;" id="map"></div>
+      <script defer="defer" type="text/javascript">
+  var map = new OpenLayers.Map('map',
+                                     // mettre les coordonnees (bounds) dans le systeme de projection du district
+									 {maxExtent: new OpenLayers.Bounds(-180,-90,180,-60),
+                                      projection: new OpenLayers.Projection('EPSG:4326'),
+                displayProjection: new OpenLayers.Projection("EPSG:4326"),});     
+
+  
+var toponymie = new OpenLayers.Layer.WMS( "toponymie", "http://192.168.1.40/cgi-bin/mapserv?map=/var/www/antarctique/mapfile_antarctique.map&",
+
+ {layers:'toponymie'}, {isBaseLayer: true}
+);
+
+    var gmap = new OpenLayers.Layer.Google("Google Streets"); 
+
+//var zones_sites_zones = new OpenLayers.Layer.WMS( "Zone reglementée", "http://192.168.1.40/cgi-bin/mapserv?map=/var/www/frequentations_autorisations/mapfile_zones_frequentees_wms.map&",
+
+// {layers:'zones_sites_zones',transparent: "true"}, {isBaseLayer: false,visibility: false}
+//);
+
+
+map.addLayers([toponymie,gmap]);
+
+            //Add a mouse position control
+            map.addControl(new OpenLayers.Control.MousePosition());
+
+            // Add a layer switcher control
+            map.addControl(new OpenLayers.Control.LayerSwitcher({}));
+
+if(!map.getCenter()){
+                map.zoomToMaxExtent();
+            }
+
+      </script>
+
+
+	 
+</body>
+</html>
