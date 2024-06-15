@@ -1,4 +1,4 @@
-Première version de la base de données (BDD) relationnelle de la [Réserve Naturelle des Terres australes françaises](https://reserves-naturelles.org/reserves/terres-australes-francaises/), développée par Paul Taconet entre les années 2013 et 2015.
+Modèles conceptuels et physiques de la première version de la base de données (BDD) relationnelle de la [Réserve Naturelle des Terres australes françaises](https://reserves-naturelles.org/reserves/terres-australes-francaises/), développée par Paul Taconet entre les années 2013 et 2015.
 
 La base de données a été développée en SQL sous le SGBD PostgreSQL + PostGIS. Une interface de saisie des données a également été développée en PHP+SQL.
 
