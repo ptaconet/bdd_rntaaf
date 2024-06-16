@@ -10,6 +10,6 @@ La base de données a été développée en SQL sous le SGBD PostgreSQL + PostGI
 - `bdd_tutoriels_installation/` :  Documentation technique pour installer et manipuler la BDD
 - `interface_saisie_donnees/` : Interface de saisie des données (PHP+SQL)
 
-Citation : 
+**Citation :** 
 
 Taconet, P. (2024). Codes informatiques de la première base de données relationelle de la Réserve Naturelle Nationale des Terres australes françaises. Zenodo. https://doi.org/10.5281/zenodo.11769850
